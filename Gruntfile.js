@@ -12,6 +12,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-conventional-changelog');
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-ngdocs');
+  grunt.loadNpmTasks('grunt-curl');
 
   grunt.initConfig({
 
@@ -434,10 +435,14 @@ module.exports = function (grunt) {
         src: ['docs/content/guide/<%= language %>/*.ngdoc'],
         title: 'Guide'
       }
+    },
+    curl: {
+      long: {
+         src: 'https://www.nuget.org/nuget.exe',
+         dest: 'nuget/nuget.exe'
+       }
     }
   });
-
-
 
 
   grunt.registerTask('default', ['jshint:all', 'karma']);
@@ -454,7 +459,7 @@ module.exports = function (grunt) {
     'build:loader_url',
     'build:storage_cookie',
     'build:storage_local',
-    'build:nuget'
+    'nuget'
   ]);
 
   grunt.registerTask('build:core', [
@@ -520,8 +525,9 @@ module.exports = function (grunt) {
     'ngmin:storage_local',
     'uglify:storage_local'
   ]);
-
-  grunt.registerTask('build:nuget', 'Create a nuget package', function() {
+  
+  // creates the nuget package
+  grunt.registerTask('build:nuget_pack', 'Create a nuget package', function() {
     var done = this.async;
                      
     grunt.util.spawn({
@@ -542,6 +548,12 @@ module.exports = function (grunt) {
        }
     });
   });
+  
+  // downloads nuget.exe and creates the nuget package
+  grunt.registerTask('nuget', [
+    'curl',
+    'build:nuget_pack'
+  ]);
 
 
   // For development purpose.
